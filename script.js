@@ -3,8 +3,7 @@ const addForm = document.querySelector("#addForm");
 const editForm = document.querySelector("#editForm");
 const dataWrap = document.querySelector("#dataWrap");
 const check = document.getElementById("flexSwitchCheckDefault");
-
-// const single = document.querySelector("#single")
+const single = document.querySelector("#single");
 
 const readFromStorage = (key = "users", dataType = "array") => {
   let data;
@@ -18,12 +17,11 @@ const readFromStorage = (key = "users", dataType = "array") => {
   return data;
 };
 
-const editFromStorage =(users,user)=>{
-
- let index= users.findIndex(u=>u.id===user.id)
- users.splice(index,1,user)
- writeToStorage(users)
-}
+const editFromStorage = (users, user) => {
+  let index = users.findIndex((u) => u.id === user.id);
+  users.splice(index, 1, user);
+  writeToStorage(users);
+};
 
 const writeToStorage = (data, key = "users") => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -67,22 +65,15 @@ const changeActivity = (users, i) => {
   draw(users);
 };
 
-// function readElement(id){
-//   let users=readFromStorage();
-//   let user =users.find((user)=>user.id===id)
-//   return user
-// }
-
 const editUser = (user) => {
   writeToStorage(user, "user");
   window.location.href = "editUser.html";
 };
 
-// const showSingle = (user)=>{
-//     // localStorage.setItem("itemId", i)
-//     writeToStorage(user , "item")
-//     window.location.href = "single.html"
-// }
+const showSingle = (user) => {
+  writeToStorage(user, "item");
+  window.location.href = "single.html";
+};
 const draw = (users) => {
   dataWrap.innerHTML = "";
   if (users.length == 0) {
@@ -107,6 +98,7 @@ const draw = (users) => {
     let editBtn = createMyOwnEle("button", td, "edit", "btn btn-warning mx-2");
     editBtn.addEventListener("click", () => editUser(users[i]));
     let showBtn = createMyOwnEle("button", td, "show", "btn btn-success mx-2");
+    showBtn.addEventListener("click", () => showSingle(users[i]));
     let delBtn = createMyOwnEle("button", td, "delete", "btn btn-danger mx-2");
     delBtn.addEventListener("click", () => delUser(users, i));
   });
@@ -135,21 +127,23 @@ if (dataWrap) {
   draw(users);
 }
 if (editForm) {
-  const userNameEdit= document.getElementById('name')
-  const userAgeEdit= document.getElementById('age')
-  const checkEdit= document.getElementsByClassName('check')[0]
-  const activeToggleEdit= document.getElementById('activeToggleEdit')
-  const user = readFromStorage('user', "object");
-  const users=readFromStorage()
-  userNameEdit.value=user.name;
-  userAgeEdit.value=user.age;
-  if(user.activeStatus==='not active'){
-    checkEdit.removeAttribute("checked")
-    activeToggleEdit.innerText='not active'
+  const userNameEdit = document.getElementById("name");
+  const userAgeEdit = document.getElementById("age");
+  const checkEdit = document.getElementsByClassName("check")[0];
+  const activeToggleEdit = document.getElementById("activeToggleEdit");
+  const user = readFromStorage("user", "object");
+  const users = readFromStorage();
+  if (users.length === 0) {
+    user = {};
   }
-  else{
-    checkEdit.setAttribute("checked",'checked')
-    activeToggleEdit.innerText='active'
+  userNameEdit.value = user.name;
+  userAgeEdit.value = user.age;
+  if (user.activeStatus === "not active") {
+    checkEdit.removeAttribute("checked");
+    activeToggleEdit.innerText = "not active";
+  } else {
+    checkEdit.setAttribute("checked", "checked");
+    activeToggleEdit.innerText = "active";
   }
   checkEdit.addEventListener("click", () => {
     if (checkEdit.checked) {
@@ -158,23 +152,30 @@ if (editForm) {
       activeToggleEdit.innerText = "not active";
     }
   });
-  editForm.addEventListener('submit',(e)=>{
+  editForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    user.name=userNameEdit.value
-    user.age=userAgeEdit.value
-    user.activeStatus=activeToggleEdit.innerText
-    editFromStorage(users,user)
-    window.location.href='index.html'
-  })
+    user.name = userNameEdit.value;
+    user.age = userAgeEdit.value;
+    user.activeStatus = activeToggleEdit.innerText;
+    editFromStorage(users, user);
 
+    window.location.href = "index.html";
+  });
 }
 
-// if(single){
-//     // console.log("test")
-//     const user = readFromStorage("item", "object")
-//     if(Array.isArray(user)) createMyOwnEle("div", single, "no data to show", "alert alert-danger")
-//     else createMyOwnEle("div", single, user.title, "alert alert-primary")
-// }
-
-
-//1662414345211
+if (single) {
+  // console.log("test")
+  let users = readFromStorage();
+  let user = readFromStorage("item", "object");
+  if (users.length === 0) {
+    createMyOwnEle("div", single, "no data to show", "alert alert-danger");
+    user = {};
+  } else {
+    createMyOwnEle(
+      "div",
+      single,
+      `${user.name} -- ${user.age} -- ${user.activeStatus} `,
+      "alert alert-primary"
+    );
+  }
+}
