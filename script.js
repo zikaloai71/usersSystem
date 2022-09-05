@@ -26,10 +26,10 @@ const createUserObject = (addForm) =>{
     taskHeads.forEach(head => {
         if(head==='activeStatus'){
             if (check.checked){
-                user[head]="Active"
+                user[head]="active"
             }
             else{
-                user[head]="not Active"
+                user[head]="not active"
             }
         }
         else{
@@ -48,6 +48,18 @@ const createMyOwnEle = (eleTag, parent, txtContent=null, classes=null) =>{
 }
 const delUser = (users, i)=>{
     users.splice(i,1)
+    writeToStorage(users)
+    draw(users)
+}
+
+const changeActivity = (users, i)=>{
+    
+    if( users[i].activeStatus==="active"){
+        users[i].activeStatus="not active"
+    }
+    else if ( users[i].activeStatus==="not active"){
+        users[i].activeStatus="active"
+    }
     writeToStorage(users)
     draw(users)
 }
@@ -70,14 +82,13 @@ const draw = (users) => {
         createMyOwnEle("td", tr, user.age)
         createMyOwnEle("td", tr, user.activeStatus)
         let td = createMyOwnEle("td", tr)
-        
+        let statusBtn = createMyOwnEle("button", td, "change activity", "btn btn-primary mx-2 my-1")
+        statusBtn.addEventListener("click", ()=>changeActivity(users, i))
+        let editBtn = createMyOwnEle("button", td, "edit", "btn btn-warning mx-2")
+        let showBtn = createMyOwnEle("button", td, "show", "btn btn-success mx-2")
         let delBtn = createMyOwnEle("button", td, "delete", "btn btn-danger mx-2")
         delBtn.addEventListener("click", ()=>delUser(users, i) )
-
-        let editBtn = createMyOwnEle("button", td, "edit", "btn btn-warning mx-2")
-        editBtn.addEventListener("click", ()=> showSingle(users[i] ) )
-        let showBtn = createMyOwnEle("button", td, "show", "btn btn-success mx-2")
- 
+        
     })
 }
 
