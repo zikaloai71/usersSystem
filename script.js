@@ -1,10 +1,17 @@
+//name of inputs 
 const taskHeads = ["name", "age", "activeStatus"];
+//DOM elements
 const addForm = document.querySelector("#addForm");
 const editForm = document.querySelector("#editForm");
 const dataWrap = document.querySelector("#dataWrap");
 const check = document.getElementById("flexSwitchCheckDefault");
-const single = document.querySelector("#single");
+const single = document.querySelector("#single");3
+const userNameEdit = document.getElementById("name");
+const userAgeEdit = document.getElementById("age");
+const checkEdit = document.getElementsByClassName("check")[0];
+const activeToggleEdit = document.getElementById("activeToggleEdit");
 
+//read from local storage function
 const readFromStorage = (key = "users", dataType = "array") => {
   let data;
   try {
@@ -17,16 +24,20 @@ const readFromStorage = (key = "users", dataType = "array") => {
   return data;
 };
 
+
+//edit from local storage function
 const editFromStorage = (users, user) => {
   let index = users.findIndex((u) => u.id === user.id);
   users.splice(index, 1, user);
   writeToStorage(users);
 };
 
+//write to storage function
 const writeToStorage = (data, key = "users") => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
+//create new user object
 const createUserObject = (addForm) => {
   let user = { id: Date.now() };
   taskHeads.forEach((head) => {
@@ -42,6 +53,8 @@ const createUserObject = (addForm) => {
   });
   return user;
 };
+
+//create element in DOM
 const createMyOwnEle = (eleTag, parent, txtContent = null, classes = null) => {
   const myNewElement = document.createElement(eleTag);
   if (classes) myNewElement.classList = classes;
@@ -49,12 +62,15 @@ const createMyOwnEle = (eleTag, parent, txtContent = null, classes = null) => {
   parent.appendChild(myNewElement);
   return myNewElement;
 };
+
+//delete user from storage
 const delUser = (users, i) => {
   users.splice(i, 1);
   writeToStorage(users);
   draw(users);
 };
 
+//change activity of user 
 const changeActivity = (users, i) => {
   if (users[i].activeStatus === "active") {
     users[i].activeStatus = "not active";
@@ -65,15 +81,19 @@ const changeActivity = (users, i) => {
   draw(users);
 };
 
+//edit user information
 const editUser = (user) => {
   writeToStorage(user, "user");
   window.location.href = "editUser.html";
 };
 
+//show one user information
 const showSingle = (user) => {
   writeToStorage(user, "item");
   window.location.href = "single.html";
 };
+
+//render the table of users
 const draw = (users) => {
   dataWrap.innerHTML = "";
   if (users.length == 0) {
@@ -81,6 +101,7 @@ const draw = (users) => {
     let td = createMyOwnEle("td", tr, "no data found", "alert alert-danger");
     td.setAttribute("colspan", "5");
   }
+
   users.forEach((user, i) => {
     let tr = createMyOwnEle("tr", dataWrap);
     createMyOwnEle("td", tr, user.id);
@@ -94,16 +115,21 @@ const draw = (users) => {
       "change activity",
       "btn btn-primary mx-2 my-1"
     );
+
     statusBtn.addEventListener("click", () => changeActivity(users, i));
+    
     let editBtn = createMyOwnEle("button", td, "edit", "btn btn-warning mx-2");
     editBtn.addEventListener("click", () => editUser(users[i]));
+
     let showBtn = createMyOwnEle("button", td, "show", "btn btn-success mx-2");
     showBtn.addEventListener("click", () => showSingle(users[i]));
+
     let delBtn = createMyOwnEle("button", td, "delete", "btn btn-danger mx-2");
     delBtn.addEventListener("click", () => delUser(users, i));
   });
 };
 
+//collect data from add user form
 if (addForm) {
   addForm.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -122,15 +148,16 @@ if (addForm) {
     }
   });
 }
+
+//re-render data of users after any change
 if (dataWrap) {
   const users = readFromStorage();
   draw(users);
 }
+
+//collect data from edit form
 if (editForm) {
-  const userNameEdit = document.getElementById("name");
-  const userAgeEdit = document.getElementById("age");
-  const checkEdit = document.getElementsByClassName("check")[0];
-  const activeToggleEdit = document.getElementById("activeToggleEdit");
+
   const user = readFromStorage("user", "object");
   const users = readFromStorage();
   if (users.length === 0) {
@@ -163,8 +190,9 @@ if (editForm) {
   });
 }
 
+
+//render single information of user
 if (single) {
-  // console.log("test")
   let users = readFromStorage();
   let user = readFromStorage("item", "object");
   if (users.length === 0) {
